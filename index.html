@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sketch</title>
+    <title>Solar System</title>
 
     <link rel="stylesheet" type="text/css" href="style.css">
 
@@ -13,6 +13,25 @@
   </head>
 
   <body>
+    <script src="gui.js"></script>
     <script src="sketch.js"></script>
+    <div id="app">
+      <div id="canvas-container"></div>
+      <div id="gui-panel">
+        <h2>Solar System Controls</h2>
+        <section id="stars-controls">
+          <h3>Stars</h3>
+        </section>
+        <section id="earth-moon-controls">
+          <h3>Earth and Moon</h3>
+        </section>
+        <section if="planet-controls">
+          <h3>Additional Planets</h3>
+        </section>
+        <section id="simulation-controls">
+          <h3>Simulation Controls</h3>
+        </section>
+      </div>
+    </div>
   </body>
 </html>

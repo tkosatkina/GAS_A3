@@ -1,15 +1,39 @@
+/**
+ * Project:     Assignment 3 
+ * Prepared by: Tatiana Kosatkina (8914510)
+ * Course:      SENG3040 - Graphics, Animation, and Sound
+ * Date:        November 27, 2026
+ * 
+ * 
+ * Description: This code is 
+ */
+
 // Constants
-SEED = 99; // Seed for random number generation
-STAR_COUNT = 100; // Number of stars to draw
+const SEED = 99; // Seed for random number generation
+const STAR_COUNT = 100; // Default state
+const STAR_RADIUS = 1.5;
+const SUN_RADIUS = 30;
+const EARTH_RADIUS = 10;
+const EARTH_DIST = 100;
+const EARTH_SPEED = 0.01;
+const MOON_RADIUS = 3;
+const MOON_DIST = 20;
+const MOON_SPEED = 0.02;
 
 // Variables
-let numOfStars;
 let imgEarth;
 let imgMoon;
+
 let earthOrbitAng = 0;
-let earthRotationAng = 0
+let earthRotationAng = 0;
 let moonOrbitAng = 0;
 let moonRotationAng = 0;
+
+let stars = [];
+let planets = [];
+
+let isPaused = false; 
+
 
 function preload() {
   imgEarth = loadImage('./assets/earth_daymap.jpg'); // Load the Earth texture image
@@ -17,43 +41,64 @@ function preload() {
 }
 
 function setup() {
-  createCanvas(700, 700, WEBGL);
+  let canvas = createCanvas(700, 700, WEBGL);
+  canvas.parent('canvas-container');
+
+  randomSeed(SEED); // Set a seed for consistent star positions
+  generateStars(STAR_COUNT);
+  createBaseGui();
 }
 
-let angle = 0;
+
 
 function draw() {
   background(0);
   
   // Base Solar system
-  drawStars();   
+  drawStars(stars);  
   
-  // Weak ambient light to make the dark side slightly visible
-  ambientLight(65);
-  // Light emitted from the Sun
-  pointLight(255, 255, 255, 0, 0, 0);
+  ambientLight(100);                    // Ambient light to make the dark side visible
+  pointLight(255, 255, 255, 0, 0, 0);   // Light emitted from the Sun
   
-  drawSun();     
-  drawEarth();    
-  
+  // Read GUI values
+  let earthDistance = gui.earthDistance.value();
+  let earthSpeed = gui.earthSpeed.value();
+
+  let moonDistance = gui.moonDistance.value();
+  let moonSpeed = gui.moonSpeed.value();
+
+  // Update rotation
+  updateRotation(earthSpeed, moonSpeed);
+
+  drawSun();
+  drawEarth(earthDistance, earthOrbitAng, earthRotationAng, moonDistance, moonOrbitAng, moonRotationAng);    
 }
 
 /**
- * This function draws 100 stars in random positions on the canvas. 
- * Each star is represented as a small white circle.
+ * This function generates stars and stores them in array
  */
-function drawStars() {
-  randomSeed(SEED); // Set a seed for consistent star positions
+function generateStars(count) {
+  stars = [];
 
-  for (let i = 0; i < STAR_COUNT; i++) {
-    let x = random(-width / 2, width / 2);
-    let y = random(-height / 2, height / 2);
-    //let z = random(-height / 2, height / 2);
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: random(-width / 2, width / 2),
+      y: random(-height / 2, height / 2)
+    });
+  }
+}
+
+/**
+ * This function draws stars using previously generated positions. 
+ * Each star is represented as a small rainbow color circle.
+ */
+function drawStars(stars) {
+  for (let star of stars) {
     push();
-    translate(x, y);
+    translate(star.x, star.y);
     normalMaterial(); // Use normal material for stars
     noStroke();
-    sphere(1.5);    
+    sphere(STAR_RADIUS);    
     pop();
   }
 }
@@ -66,7 +111,7 @@ function drawSun() {
   push();
   emissiveMaterial(255, 204, 0); // Yellow color for the sun with the light comming from it
   noStroke();
-  sphere(30); 
+  sphere(SUN_RADIUS); 
   pop();
 }
 
@@ -75,44 +120,59 @@ function drawSun() {
  * The Earth is represented as a sphere with a texture applied to it 
  * that rotates arouund its z-axis and around the sun.
  */
-function drawEarth() {
+function drawEarth(distance, orbitAng, rotationAng, moonDistance, moonOrbit, moonRotation) {
   push(); 
 
   // Add rotations and positions to simulate the Earth's orbit around the sun and its own rotation
-  rotateZ(angle); 
-  translate(100, 0, 0); // Move the Earth to the right of the sun
+  rotateZ(orbitAng); 
+  translate(distance, 0, 0); // Move the Earth to the right of the sun
   
   push();
-  rotateY(angle * 2);
+  rotateY(rotationAng);
 
   // Apply the Earth texture
   texture(imgEarth); 
   noStroke();
-  sphere(10);
+  sphere(EARTH_RADIUS);
   pop();
 
   // Add Moon relatively to Earth's position
-  drawMoon();
+  drawMoon(moonDistance, moonOrbit, moonRotation);
   pop();
-
-  angle += 0.01; // Increment the angle for rotation
 }
 
 /**
  * This function draws Moon orbiting around the Earth. 
  * The Moon is represented as a smaller sphere with a texture applied to it.
  */
-function drawMoon() {
+function drawMoon(distance, orbitAng, rotationAng) {
   push();
 
-  rotateZ(angle * 2); // Rotate the moon around the Earth
-  translate(20, 0, 0); // Move the Moon to the right of the Earth
-  rotateY(angle * 4); // Rotate the Moon on its own axis
+  rotateZ(orbitAng); // Rotate the moon around the Earth
+  translate(distance, 0, 0); // Move the Moon to the right of the Earth
+  rotateY(rotationAng); // Rotate the Moon on its own axis
 
   // Apply the Moon texture
   texture(imgMoon);
   noStroke();
-  sphere(3);
+  sphere(MOON_RADIUS);
 
   pop();
+}
+
+/**
+ * This function updates orbital and axial rotation angles unless the simulation is paused.
+ */
+function updateRotation(earthSpeed, moonSpeed) {
+  if(isPaused) {
+    return;
+  }
+
+  // Rotate the Earth
+  earthOrbitAng += earthSpeed;
+  earthRotationAng += earthSpeed * 2;
+
+  // Rotate the Moon
+  moonOrbitAng += moonSpeed;
+  moonRotationAng += moonSpeed * 2;
 }

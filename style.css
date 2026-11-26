@@ -6,3 +6,65 @@ html, body {
 canvas {
   display: block;
 }
+
+body {
+  font-family: Aptos, sans-serif;
+  background-color: #eeeeee;
+  margin: 20px;
+}
+
+#app {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+canvas {
+  display: block;
+}
+
+#gui-panel {
+  width: 300px;
+  max-height: 700px;
+  overflow-y: auto;
+  background-color: rgb(192, 191, 191);
+  padding: 15px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1px solid #cccccc;
+}
+
+section {
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+h3 {
+  border-bottom: 1px solid #cccccc;
+  padding-bottom: 5px;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  gap: 5px;
+}
+
+.control input[type="range"] {
+  width: 100%;
+}
+
+button {
+  padding: 8px 12px;
+  margin: 5px 0;
+  cursor: pointer;
+}
+
+#simulation-controls button {
+  display: block;
+  width: 100%;
+}
