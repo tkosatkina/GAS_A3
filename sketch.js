@@ -18,7 +18,27 @@ const EARTH_DIST = 100;
 const EARTH_SPEED = 0.01;
 const MOON_RADIUS = 3;
 const MOON_DIST = 20;
-const MOON_SPEED = 0.02;
+const MOON_SPEED = 0.01;
+const PLANET_RADIUS = 15;
+const PLANET_DIST = 200;
+const PLANET_SPEED = 0.005;
+const PLANET_COLOR = "#7d7f7c";
+const PLANET_MOON_RADIUS = 5;
+const PLANET_MOON_DIST = 25;
+const PLANET_MOON_SPEED = 0.01;
+const PLANET_MOON_COLOR = "#d3d3d3";
+
+const PLANET_COLORS = [
+  "#C75B5B", // Red
+  "#D99058", // Orange
+  "#D6C36A", // Yellow
+  "#79A66D", // Green
+  "#648FC4", // Blue
+  "#6868A8", // Indigo
+  "#A17BB8", // Violet
+  "#7D7F7C"  // Gray
+];
+
 
 // Variables
 let imgEarth;
@@ -29,10 +49,13 @@ let earthRotationAng = 0;
 let moonOrbitAng = 0;
 let moonRotationAng = 0;
 
+// Arrays
 let stars = [];
 let planets = [];
 
-let isPaused = false; 
+// Flags
+let isPaused = false;
+const PLANET_HAS_MOON = false; 
 
 
 function preload() {
@@ -46,10 +69,11 @@ function setup() {
 
   randomSeed(SEED); // Set a seed for consistent star positions
   generateStars(STAR_COUNT);
+
   createBaseGui();
+  createAdditionalGui();
+  createSimulationGui();
 }
-
-
 
 function draw() {
   background(0);
@@ -72,6 +96,11 @@ function draw() {
 
   drawSun();
   drawEarth(earthDistance, earthOrbitAng, earthRotationAng, moonDistance, moonOrbitAng, moonRotationAng);    
+
+  // Additional planets
+  for(let planet of planets) {
+    drawPlanet(planet);
+  }
 }
 
 /**
@@ -161,6 +190,48 @@ function drawMoon(distance, orbitAng, rotationAng) {
 }
 
 /**
+ * This function draws additional planets with defined parameters from GUI.
+ * The planet is represented as a sphere with solid color.
+ */
+function drawPlanet(planet) {
+  push();
+
+  // Add rotations and positions to simulate the planet's orbit around the sun and its own rotation
+  rotateZ(planet.orbitAngle); 
+  translate(planet.distance, 0, 0); // Move the Earth to the right of the sun
+ 
+  // Apply color using ambient material
+  ambientMaterial(color(planet.color)); 
+  noStroke();
+  sphere(planet.radius);
+
+  // Add moon if checkbox is checked
+  if(planet.hasMoon) {
+    drawPlanetMoon(planet);
+  }
+  
+  pop();
+}
+
+/**
+ * This function draws a moon that rotates the orbit of additional planet.
+ * The Moon represented by a small gray sphere
+ */
+function drawPlanetMoon(planet) {
+  push();
+
+  rotateZ(planet.moonOrbitAngle); // Rotate the moon around the planet
+  translate(planet.moonDistance, 0, 0);
+
+  // Apply color using ambient material
+  ambientMaterial(color(PLANET_MOON_COLOR)); 
+  noStroke();
+  sphere(planet.moonRadius);
+
+  pop();
+}
+
+/**
  * This function updates orbital and axial rotation angles unless the simulation is paused.
  */
 function updateRotation(earthSpeed, moonSpeed) {
@@ -175,4 +246,54 @@ function updateRotation(earthSpeed, moonSpeed) {
   // Rotate the Moon
   moonOrbitAng += moonSpeed;
   moonRotationAng += moonSpeed * 2;
+
+  // Rotate additional planets and their moons
+  for(let planet of planets) {
+    planet.orbitAngle += planet.orbitSpeed;
+  
+    if(planet.hasMoon) {
+      planet.moonOrbitAngle += planet.moonOrbitSpeed;
+    }
+  }
+}
+
+/**
+ * Function that removes the last added planet and its moon.
+ */
+function removeLastPlanet() {
+  planets.pop();
+}
+
+/**
+ * Function that pauses or resumes all rotations in the simulation.
+ */
+function togglePause() {
+  isPaused = !isPaused;
+
+  if (isPaused) {
+    gui.pauseBtn.html('Resume rotation');
+  } else {
+    gui.pauseBtn.html('Pause rotation');
+  }
+}
+
+/**
+ * Function that restores the simulation to its default state.
+ */
+function resetSimulation() {
+  // Remove all additional planets
+  planets = [];
+
+  // Reset rotation angles
+  earthOrbitAng = 0;
+  earthRotationAng = 0;
+  moonOrbitAng = 0;
+  moonRotationAng = 0;
+
+  // Resume rotation
+  isPaused = false;
+
+  // Restore original stars
+  randomSeed(SEED);
+  generateStars(STAR_COUNT);
 }
