@@ -32,3 +32,11 @@ Planet color            : #A17BB8 (Violet)
 Distance from the Sun   : 300
 Planet orbital speed    : 0.025
 Add a moon              : no
+
+
+Testing instructions:
+
+- Enter parameters from the first example set in Additional Planets GUI
+- Enable "Add a moon" checkbox if required and enter moon's parameters
+- Press "Add planet" button
+- Repeat for the remaining example sets
