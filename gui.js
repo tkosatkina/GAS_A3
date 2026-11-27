@@ -16,11 +16,11 @@ function createBaseGui() {
 
     // Earth controls
     gui.earthDistance = addSlider('earth-moon-controls', 'Earth distance from the Sun', 80, 300, EARTH_DIST, 1);
-    gui.earthSpeed = addSlider('earth-moon-controls', 'Earth rotation Speed', 0, 0.1, EARTH_SPEED, 0.001);
+    gui.earthSpeed = addSlider('earth-moon-controls', 'Earth rotation speed', 0, 0.1, EARTH_SPEED, 0.001);
 
     // Moon controls
     gui.moonDistance = addSlider('earth-moon-controls', 'Moon distance from the Earth', 15, 60, MOON_DIST, 1);
-    gui.moonSpeed = addSlider('earth-moon-controls', 'Moon rotation Speed', 0, 0.2, MOON_SPEED, 0.001);
+    gui.moonSpeed = addSlider('earth-moon-controls', 'Moon rotation speed', 0, 0.2, MOON_SPEED, 0.001);
 }
 
 /**
@@ -130,6 +130,11 @@ function toggleMoonControls() {
  * This function takes planet's parameters and handles Add Planet button press event
  */
 function addPlanet() {
+  // Maximum number of additional planets is 8
+  if(planets.length >= MAX_PLANETS - 1) {
+    alert('Maximum of ' + MAX_PLANETS + ' additional planets is allowed.');
+  }
+  
   // Planet object
   let planet = {
     radius: gui.planetRadius.value(),

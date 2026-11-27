@@ -4,8 +4,8 @@
  * Course:      SENG3040 - Graphics, Animation, and Sound
  * Date:        November 27, 2026
  * 
- * 
- * Description: This code is 
+ * Description: This code is a 3D simulation of a solar system with GUI controls
+ * that allow user to modify the system.
  */
 
 // Constants
@@ -19,6 +19,7 @@ const EARTH_SPEED = 0.01;
 const MOON_RADIUS = 3;
 const MOON_DIST = 20;
 const MOON_SPEED = 0.01;
+const MAX_PLANETS = 8;
 const PLANET_RADIUS = 15;
 const PLANET_DIST = 200;
 const PLANET_SPEED = 0.005;
